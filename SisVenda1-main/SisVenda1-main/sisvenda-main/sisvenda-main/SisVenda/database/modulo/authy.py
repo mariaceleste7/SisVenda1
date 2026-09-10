@@ -58,7 +58,8 @@ def criar_usuario_admin_padrao():
     if total_usuarios == 0:
         senha_hash = gerar_hash_senha("admin123")
         cursor.execute(
-            """INSERT INTO usuarios (nome, usuario, senha_hash, cargo, ativo)
+            """
+            INSERT INTO usuarios (nome, usuario, senha_hash, cargo, ativo)
             VALUES (?, ?, ?, ?, 1);
             """,
             ("Administrador Padrão", "admin", senha_hash, "Administrador")
@@ -67,3 +68,21 @@ def criar_usuario_admin_padrao():
         print("[AUTH] Administrador padrão criado com sucesso!")
         print("    Login: admin | Senha: admin123")
     conn.close()
+def autenticar_usuario(usuario_login: str, senha_plana: str):
+    """Valida as credenciais do usuário."""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT * FROM usuarios WHERE usuario = ? AND ativo = 1;",
+        (usuario_login)
+    )
+    usuario_row = cursor.fetchone()
+    conn.close()
+
+    if not usuario_row:
+        return False, "Usuário não encontrado ou inativo."
+    if verificar_senha(senha_plana, usuario_row["senha_hash"]):
+        Session.set_user(usuario_row)
+        return True, f"Bem-vindo, {usuario_row['nome']}!"
+    return False, "Senha incorreta."
