@@ -54,4 +54,10 @@ def menu_principal():
             sys.exit(0)
         elif opcao in ['1', '2', '3']:
             print(f"\n[Aviso] A funcionalidade '{opcao}' ainda não foi implementada")
-            
+        else:
+            print("\n[Erro] Opcão inválida!")
+if __name__ == "__main__":
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nSistema encerrado pelo usuário.")
